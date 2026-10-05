@@ -27,23 +27,28 @@ export default function SiteApp() {
   const [modeOpen, setModeOpen] = useState(false);
 
   // Scroll: flows start at the top; "#/menu?c=…" jumps to that menu section on the home page.
+  // Every page starts at the top; "#/menu?c=…" then jumps to that category on the menu page.
   useEffect(() => {
-    if (Flow) { window.scrollTo({ top: 0 }); return; }
-    if (route.name === 'menu') {
-      requestAnimationFrame(() => document.getElementById(route.params.c ? 'cat-' + route.params.c : 'menu')?.scrollIntoView({ behavior: 'smooth' }));
-      if (route.params.search) setTimeout(() => document.getElementById('site-search')?.focus(), 400);
-    } else if (route.name === 'branches') {
-      requestAnimationFrame(() => document.getElementById('branches')?.scrollIntoView({ behavior: 'smooth' }));
-    } else window.scrollTo({ top: 0 });
-  }, [route.name, route.id, route.params.c, route.params.search]); // eslint-disable-line react-hooks/exhaustive-deps
+    window.scrollTo({ top: 0 });
+    if (route.name === 'menu' && route.params.c) {
+      setTimeout(() => {
+        const el = document.getElementById('cat-' + route.params.c);
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 150, behavior: 'smooth' });
+      }, 150);
+    }
+    if (route.name === 'menu' && route.params.search) setTimeout(() => document.getElementById('site-search')?.focus(), 300);
+  }, [route.name, route.id, route.params.c, route.params.search]);
+  const Page = route.name === 'menu' ? MenuPage : route.name === 'branches' ? BranchesPage : null;
 
   return (
     <div className="min-h-dvh bg-paper text-ink">
       <PushNotice fixed />
       <Announcement />
-      <Header page={Flow ? route.name : 'home'} onBranch={() => setModeOpen(true)} />
+      <Header page={Flow || Page ? route.name : 'home'} onBranch={() => setModeOpen(true)} />
       {Flow ? (
         <main className="site-flow mx-auto w-full max-w-xl pt-4 sm:pt-8"><Flow route={route} /></main>
+      ) : Page ? (
+        <Page />
       ) : (
         <Home onBranch={() => setModeOpen(true)} />
       )}
@@ -196,7 +201,9 @@ function Home({ onBranch }) {
           </div>
         </section>
 
-        <MenuSection />
+        <div className="mt-8 flex justify-center">
+          <a href="#/menu" className="flex items-center gap-2 rounded-2xl bg-forest px-7 py-3.5 font-semibold text-cream shadow-lg hover:bg-forest-2">{t('See the full menu', 'شوف المنيو كامل')}<ArrowRight size={18} className="rtl:-scale-x-100" /></a>
+        </div>
 
         {/* Loyalty + drive-thru */}
         <section className="mt-16 grid gap-4 lg:grid-cols-2">
@@ -212,7 +219,7 @@ function Home({ onBranch }) {
           </div>
         </section>
 
-        <BranchesSection />
+        <BranchesTeaser />
 
         {/* Instagram */}
         <section className="mt-16">
@@ -272,6 +279,71 @@ function ProductCard({ p }) {
   );
 }
 
+// Separate pages (#/menu, #/branches): a brand band on top, then the content.
+function PageBanner({ title, sub, photo }) {
+  const { t } = useStore();
+  return (
+    <section className="staff-lines relative overflow-hidden bg-forest text-cream">
+      <img src={asset('assets/menu/' + photo + '.jpg')} alt="" className="absolute inset-y-0 end-0 hidden h-full w-2/5 object-cover opacity-40 md:block [mask-image:linear-gradient(to_left,black,transparent)] rtl:[mask-image:linear-gradient(to_right,black,transparent)]" />
+      <div className="relative mx-auto max-w-6xl px-4 py-10 sm:py-14">
+        <a href="#/" className="text-sm text-cream/60 hover:text-cream">{t('Home', 'الرئيسية')}</a>
+        <h1 className="mt-2 text-3xl font-semibold sm:text-5xl">{title}</h1>
+        <p className="mt-2 max-w-xl text-cream/75">{sub}</p>
+      </div>
+    </section>
+  );
+}
+
+function MenuPage() {
+  const { t } = useStore();
+  return (
+    <>
+      <PageBanner photo="_coffee" title={t('Menu', 'المنيو')} sub={t('Coffee, drinks, fresh croissants, sandwiches and desserts — prices in Saudi Riyal, from Kav’s menu.', 'قهوة، مشروبات، كرواسون طازج، ساندويتشات وحلويات — الأسعار بالريال السعودي حسب منيو كاف.')} />
+      <div className="mx-auto max-w-6xl px-4">
+        <PausedBanner className="mt-6" />
+        <MenuSection />
+      </div>
+    </>
+  );
+}
+
+function BranchesPage() {
+  const { t } = useStore();
+  return (
+    <>
+      <PageBanner photo="_green" title={t('Branches', 'الفروع')} sub={t('Dammam · Qatif · Drive Thru — pick a branch, see today’s hours and get directions.', 'الدمام · القطيف · درايف ثرو — اختر الفرع، شوف أوقات اليوم والاتجاهات.')} />
+      <div className="mx-auto max-w-6xl px-4">
+        <BranchesSection />
+      </div>
+    </>
+  );
+}
+
+// Home: a short list that leads to the Branches page.
+function BranchesTeaser() {
+  const { t, ar } = useStore();
+  return (
+    <section className="mt-16">
+      <SectionTitle title={t('Our branches', 'فروعنا')} sub={t(cafe.city.en, cafe.city.ar)}
+        action={<a href="#/branches" className="flex items-center gap-1 text-sm font-medium text-wine">{t('All branches & hours', 'كل الفروع والأوقات')}<ArrowRight size={14} className="rtl:-scale-x-100" /></a>} />
+      <div className="no-scrollbar -mx-4 mt-5 flex gap-3 overflow-x-auto px-4 pb-2">
+        {branches.map((b) => {
+          const s = openStatus(b);
+          return (
+            <a key={b.id} href="#/branches" className="flex w-64 shrink-0 items-start gap-3 rounded-3xl bg-white p-4 shadow-sm hover:shadow-md">
+              <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-paper text-wine">{b.drive ? <Car size={20} /> : <MapPin size={20} />}</span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold leading-snug">{t(b.en, b.ar)}</span>
+                <span className="mt-1 flex items-center gap-1.5 text-xs text-ink/60"><span className={'h-1.5 w-1.5 rounded-full ' + (s.isOpen ? 'bg-leaf' : 'bg-wine')} />{s.isOpen ? t('Open', 'مفتوح') : t('Closed', 'مغلق')} · {statusText(s, t, ar)}</span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
 function MenuSection() {
   const { t } = useStore();
   const [query, setQuery] = useState('');
@@ -295,9 +367,8 @@ function MenuSection() {
   }, []);
 
   return (
-    <section id="menu" className="mt-16 scroll-mt-24">
-      <SectionTitle title={t('The full menu', 'المنيو كامل')} sub={t('Prices in Saudi Riyal, from Kav’s menu', 'الأسعار بالريال السعودي حسب منيو كاف')} />
-      <div className="sticky top-20 z-30 -mx-4 mt-4 border-b border-ink/5 bg-paper/95 px-4 py-3 backdrop-blur-md">
+    <section id="menu">
+      <div className="sticky top-20 z-30 -mx-4 mt-2 border-b border-ink/5 bg-paper/95 px-4 py-3 backdrop-blur-md">
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
           <label className="flex h-11 items-center gap-2 rounded-full bg-white px-4 shadow-sm focus-within:ring-2 focus-within:ring-forest/30 md:w-72">
             <MagnifyingGlass size={18} className="shrink-0 text-forest" />
@@ -345,9 +416,8 @@ function BranchesSection() {
     go('menu');
   };
   return (
-    <section id="branches" className="mt-16 scroll-mt-24">
-      <SectionTitle title={t('Our branches', 'فروعنا')} sub={t(cafe.city.en, cafe.city.ar)} />
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <section id="branches">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {branches.map((b) => {
           const s = openStatus(b);
           const on = mode === 'pickup' && branch.id === b.id;
