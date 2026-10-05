@@ -3,7 +3,7 @@ import { KEYS, useShared, read, write } from '../shared/storage';
 import { loadSamples, SAMPLES_KEY } from './data';
 import {
   Receipt, ForkKnife, ChartBar, GearSix, SignOut, Globe, UserCircle, ShieldCheck, Coffee, Pause, Info,
-  Storefront, Tag, Medal, UsersThree, BellRinging, IdentificationBadge,
+  Storefront, Tag, Medal, UsersThree, BellRinging, IdentificationBadge, DeviceMobile, Monitor,
 } from '@phosphor-icons/react';
 import Orders from './Orders';
 import MenuAdmin from './MenuAdmin';
@@ -141,6 +141,7 @@ function Sidebar({ current, allowed }) {
           </a>
         ))}
       </nav>
+      <CustomerLinks />
       <div className="mt-4 space-y-3 border-t border-cream/10 pt-4 text-sm">
         <div className="flex items-center gap-2 text-cream/80"><UserCircle size={22} />{t(ROLES[role].en, ROLES[role].ar)}</div>
         <div className="flex gap-2">
@@ -152,13 +153,34 @@ function Sidebar({ current, allowed }) {
   );
 }
 
+// Open what customers see, to show portal changes landing live (same browser).
+function CustomerLinks({ compact = false }) {
+  const { t } = useAdmin();
+  const base = import.meta.env.BASE_URL;
+  const links = [[base, DeviceMobile, t('Customer app', 'تطبيق العملاء')], [base + 'site/', Monitor, t('Website', 'الموقع')]];
+  if (compact) return links.map(([href, Icon, label]) => (
+    <a key={href} href={href} target="_blank" rel="noreferrer" aria-label={label} className="grid h-9 w-9 place-items-center rounded-full bg-cream/10"><Icon size={18} /></a>
+  ));
+  return (
+    <div className="mt-4 border-t border-cream/10 pt-4">
+      <p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-cream/45">{t('What customers see', 'واجهة العملاء')}</p>
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        {links.map(([href, Icon, label]) => (
+          <a key={href} href={href} target="_blank" rel="noreferrer" className="flex items-center justify-center gap-1.5 rounded-lg bg-cream/10 py-2 hover:bg-cream/15"><Icon size={16} />{label}</a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function MobileTop() {
   const { t, ar, setLang, setRole } = useAdmin();
   return (
     <header className="sticky top-0 z-30 flex items-center gap-3 bg-forest-deep px-4 py-3 text-cream lg:hidden">
       <Wordmark light className="h-7 w-auto" />
-      <PortalLabel light />
+      <span className="hidden sm:block"><PortalLabel light /></span>
       <span className="flex-1" />
+      <CustomerLinks compact />
       <button onClick={() => setLang(ar ? 'en' : 'ar')} aria-label={t('Switch language', 'تغيير اللغة')} className="grid h-9 w-9 place-items-center rounded-full bg-cream/10"><Globe size={18} /></button>
       <button onClick={() => setRole(null)} aria-label={t('Sign out', 'خروج')} className="grid h-9 w-9 place-items-center rounded-full bg-cream/10"><SignOut size={18} className="rtl:-scale-x-100" /></button>
     </header>

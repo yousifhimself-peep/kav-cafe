@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useStore } from './store';
 import { useRoute, go } from './router';
 import { Money, Wordmark } from './components/ui';
-import { House, ForkKnife, Receipt, ShoppingBag, CheckCircle, ArrowRight, Globe, ArrowCounterClockwise } from './components/icons';
+import { MapPin, House, ForkKnife, Receipt, ShoppingBag, CheckCircle, ArrowRight, Globe, ArrowCounterClockwise } from './components/icons';
 import ProductSheet from './components/ProductSheet';
 import { PushNotice } from './components/Extras';
 import Home from './screens/Home';
@@ -11,9 +11,10 @@ import Bag from './screens/Bag';
 import Checkout from './screens/Checkout';
 import OrderStatus from './screens/OrderStatus';
 import Orders from './screens/Orders';
+import Branches from './screens/Branches';
 
-const screens = { home: Home, menu: Menu, bag: Bag, checkout: Checkout, order: OrderStatus, orders: Orders };
-const withNav = ['home', 'menu', 'orders', 'bag'];
+const screens = { home: Home, menu: Menu, branches: Branches, bag: Bag, checkout: Checkout, order: OrderStatus, orders: Orders };
+const withNav = ['home', 'menu', 'branches', 'orders', 'bag'];
 
 export default function App() {
   const { t } = useStore();
@@ -48,18 +49,19 @@ function BottomNav({ name }) {
   const items = [
     ['home', House, t('Home', 'الرئيسية')],
     ['menu', ForkKnife, t('Menu', 'المنيو')],
+    ['branches', MapPin, t('Branches', 'الفروع')],
     ['orders', Receipt, t('Orders', 'طلباتي')],
     ['bag', ShoppingBag, t('Bag', 'السلة')],
   ];
   return (
     <nav aria-label={t('Main', 'التنقل')} className="absolute inset-x-0 bottom-0 z-30 border-t border-ink/5 bg-cream/95 pb-[max(env(safe-area-inset-bottom),8px)] pt-2 backdrop-blur-md">
-      <ul className="grid grid-cols-4">
+      <ul className="grid grid-cols-5">
         {items.map(([id, Icon, label]) => {
           const active = name === id;
           return (
             <li key={id}>
               <button onClick={() => go(id)} aria-current={active ? 'page' : undefined} className={'relative mx-auto flex w-full flex-col items-center gap-0.5 py-1 text-[11px] font-medium transition ' + (active ? 'text-forest' : 'text-ink/45')}>
-                <span className={'grid h-8 w-14 place-items-center rounded-full transition ' + (active ? 'bg-forest/10' : '')}>
+                <span className={'grid h-8 w-12 place-items-center rounded-full transition ' + (active ? 'bg-forest/10' : '')}>
                   <Icon size={22} weight={active ? 'fill' : 'regular'} />
                 </span>
                 {label}
