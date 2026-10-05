@@ -1,0 +1,117 @@
+@import "tailwindcss";
+@import "@fontsource-variable/outfit";
+@import "@fontsource/ibm-plex-sans-arabic/400.css";
+@import "@fontsource/ibm-plex-sans-arabic/500.css";
+@import "@fontsource/ibm-plex-sans-arabic/600.css";
+@import "@fontsource/ibm-plex-sans-arabic/700.css";
+@import "@emran-alhaddad/saudi-riyal-font/index.css";
+
+/* Kav palette (from their cups, logo and highlights): forest = Kav green (primary), wine = Kav maroon
+   (logo colour; accents, prices, alerts), paper/cream = their menu stock, sand = the gold cup pattern. */
+@theme {
+  --color-forest: #1f4a3c;
+  --color-forest-2: #285a4a;
+  --color-forest-deep: #132f26;
+  --color-wine: #6b2b16;
+  --color-wine-2: #84391f;
+  --color-paper: #f4f2ed;
+  --color-paper-2: #e9e5dc;
+  --color-cream: #fbf9f4;
+  --color-ink: #231b17;
+  --color-leaf: #4f8a5e;
+  --color-sand: #c9a26b;
+  --color-rose: #efe3d3;
+
+  --font-sans: "Outfit Variable", "IBM Plex Sans Arabic", "saudi_riyal", ui-sans-serif, system-ui, sans-serif;
+  --font-ar: "IBM Plex Sans Arabic", "Outfit Variable", "saudi_riyal", sans-serif;
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--color-forest-deep);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+html[lang="ar"] body { font-family: var(--font-ar); }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--color-wine);
+  outline-offset: 2px;
+}
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+.shimmer {
+  background: linear-gradient(100deg, var(--color-paper-2) 30%, #efece6 50%, var(--color-paper-2) 70%);
+  background-size: 300% 100%;
+  animation: shimmer 1.3s ease-in-out infinite;
+}
+@keyframes shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+
+/* Kav ornament texture: the four-point star and diamond from their cups and menu. */
+.staff-lines {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='%23fbf8f2' fill-opacity='.045'%3E%3Cpath d='M40 18 L44 36 L40 54 L36 36 Z'/%3E%3Cpath d='M22 36 L40 33 L58 36 L40 39 Z'/%3E%3Cpath d='M120 98 L124 116 L120 134 L116 116 Z'/%3E%3Cpath d='M102 116 L120 113 L138 116 L120 119 Z'/%3E%3Crect x='112' y='28' width='10' height='10' transform='rotate(45 117 33)'/%3E%3Crect x='35' y='111' width='10' height='10' transform='rotate(45 40 116)'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+.fade-up { animation: fadeUp .55s cubic-bezier(.2,.7,.2,1) both; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+.sheet-in { animation: sheetIn .38s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes sheetIn { from { transform: translateY(100%); } to { transform: none; } }
+.backdrop-in { animation: backdropIn .3s ease both; }
+@keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+
+.draw-in { animation: drawIn 1.6s cubic-bezier(.3,.6,.2,1) both; }
+@keyframes drawIn {
+  from { clip-path: inset(0 0 100% 0); opacity: .2; }
+  to { clip-path: inset(0 0 0 0); opacity: 1; }
+}
+
+.pop { animation: pop .35s cubic-bezier(.3,1.6,.5,1) both; }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+
+.loadbar { animation: loadbar 1.2s ease-in-out infinite; }
+@keyframes loadbar { from { transform: translateX(-100%); } to { transform: translateX(200%); } }
+
+.spin { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+@layer components {
+  .input {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 16px;
+    background: var(--color-paper);
+    padding: 0 16px;
+    font-size: 15px;
+    outline: none;
+    border: 1.5px solid transparent;
+  }
+  .input:focus { border-color: var(--color-forest); background: #fff; }
+  .input[aria-invalid="true"] { border-color: var(--color-wine); }
+}
+
+/* Search field: the pill shows the focus ring, and we provide our own clear button. */
+input[type="search"]:focus-visible { outline: none; }
+input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
+
+/* Saudi Riyal sign: own font, slightly smaller so it sits on the number's baseline. */
+.riyal { font-family: "saudi_riyal"; font-size: .92em; font-weight: normal; }
+.font-semibold .riyal, .font-bold .riyal, .riyal-bold { font-family: "saudi_riyal_bold"; }
+
+/* Full-screen site: offer ticker (two identical halves, so the loop is seamless). */
+.ticker { animation: ticker linear infinite; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+.ticker-rtl { animation-name: ticker-rtl; }
+@keyframes ticker-rtl { from { transform: translateX(0); } to { transform: translateX(50%); } }
+/* App screens reused on the site sit under the site header, so their own top bar doesn't stick. */
+.site-flow > div > header.sticky { position: static; background: transparent; backdrop-filter: none; }
