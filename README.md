@@ -15,6 +15,7 @@ npm run dev        # http://localhost:5195  (also on your Wi-Fi IP, port 5195, f
 | Phone-frame app demo | https://yousifhimself-peep.github.io/kav-cafe/ | `src/` (screens, components) |
 | Full-screen website (desktop + phone) | https://yousifhimself-peep.github.io/kav-cafe/site/ | `src/site/` (reuses bag/checkout/order screens) |
 | Admin / Staff Portal | https://yousifhimself-peep.github.io/kav-cafe/admin/ | `src/admin/` |
+| Inventory count (جرد) + dashboard | https://yousifhimself-peep.github.io/kav-cafe/inventory/ | `src/inventory/` |
 
 Portal pages: live orders (branch + type filters), menu & stock (edit price/name/description/photo, add, hide, feature),
 branches (close for the day, today's numbers), reports (+ CSV export), offers & promo codes (banner + codes that work at
@@ -24,6 +25,15 @@ so in one browser a change in the portal shows instantly in both customer versio
 
 Demo staff sign-in (no passwords): **Staff / Barista** or **Admin / Manager**. Both apps share localStorage
 (`kav-*` keys), so an order placed in the app shows up on the staff board live.
+
+## Inventory count (`/inventory/`)
+
+Daily stock count for each branch + management dashboard, a copy of the Nira inventory trial (`~/nira-inventory`) with
+Kav's logo, colours and 7 branches. Self-contained in `src/inventory/` with its own `styles.css` theme and localStorage
+keys (`kav-inventory-v1`, `kav-inv-*`), so it doesn't touch the ordering demo.
+Demo logins: staff password `1234`; dashboard at `/inventory/#/admin`, `manager` / `1234`.
+`src/inventory/items.csv` is a **proposed** item list built from the menu (minimums and order quantities are guesses):
+replace it with Kav's real count list; the app reads it directly.
 
 ## What came from Kav's Instagram
 

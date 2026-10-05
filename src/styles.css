@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source not "./inventory";
 @import "@fontsource-variable/outfit";
 @import "@fontsource/ibm-plex-sans-arabic/400.css";
 @import "@fontsource/ibm-plex-sans-arabic/500.css";
