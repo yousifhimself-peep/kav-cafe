@@ -10,10 +10,17 @@ npm install
 npm run dev        # http://localhost:5195  (also on your Wi-Fi IP, port 5195, for a phone)
 ```
 
-| App | URL | Code |
+| App | Live | Code |
 |---|---|---|
-| Customer ordering app | `/` | `src/` (screens, components) |
-| Admin / Staff Portal | `/admin/` | `src/admin/` |
+| Phone-frame app demo | https://yousifhimself-peep.github.io/kav-cafe/ | `src/` (screens, components) |
+| Full-screen website (desktop + phone) | https://yousifhimself-peep.github.io/kav-cafe/site/ | `src/site/` (reuses bag/checkout/order screens) |
+| Admin / Staff Portal | https://yousifhimself-peep.github.io/kav-cafe/admin/ | `src/admin/` |
+
+Portal pages: live orders (branch + type filters), menu & stock (edit price/name/description/photo, add, hide, feature),
+branches (close for the day, today's numbers), reports (+ CSV export), offers & promo codes (banner + codes that work at
+checkout), loyalty rules, customers & reviews, push notifications (pop up live in the open app/site), staff & roles, settings.
+Everything is shared through localStorage (`kav-*` keys, `src/shared/storage.js` → `CONTENT`, `src/shared/catalog.js`),
+so in one browser a change in the portal shows instantly in both customer versions.
 
 Demo staff sign-in (no passwords): **Staff / Barista** or **Admin / Manager**. Both apps share localStorage
 (`kav-*` keys), so an order placed in the app shows up on the staff board live.
@@ -38,7 +45,7 @@ Demo staff sign-in (no passwords): **Staff / Barista** or **Admin / Manager**. B
 - Espresso Shake (posted, branch 2 only) isn't on the menu highlight, so it's not in the app.
 - Delivery (fee, zones), payment, loyalty rules; no phone number is listed, so branches link to Google Maps instead.
 
-## Publish (not done yet)
+## Publish
 
-`npm run deploy` builds with the `/kav-cafe/` base and force-pushes `dist/` to the `gh-pages` branch of
-`yousifhimself-peep/kav-cafe` — that repo has to exist first, and it makes the demo public.
+Source is on `main` of github.com/yousifhimself-peep/kav-cafe (public). `npm run deploy` builds with the `/kav-cafe/`
+base and force-pushes `dist/` to `gh-pages`, which GitHub Pages serves.
